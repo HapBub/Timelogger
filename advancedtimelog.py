@@ -1,37 +1,37 @@
+"""
+advancedtimelog.py
+Prints any command-line arguments, then appends the current date and time
+to advancedlog.txt.
+
+The log folder defaults to the folder this script is in.
+To use another folder, set the TIMELOGGER_DIR environment variable:
+    TIMELOGGER_DIR=/path/to/folder python3 advancedlog.py hello world
+"""
+import os
 import sys
 from datetime import datetime
+from pathlib import Path
 
-# Creating a file with the command function "x"
-# Appending if the file already exists
-
-f = open ("/home/bubble/Timelogger/advancedlog.txt","a")
-
-# Getting the current time
-
-now = datetime.now()
-
-# Hour, minute, second, day, month, year
-
-date_str = now.strftime("[%d/%m/%Y %H:%M:%S] /n")
-
-#Argument count
-
-argc = len(sys.argv)
-
-#Displaying output
-
-while argc > 1:
-    print("argument ~" , str(sys.argv[argc-1]))
-    argc -= 1
-if argc==1:
-    print ("no arguments")
-
-# Writing in the file
-
-f.write (" " + date_str)    
-
-# Closing the file
-
-f.close()
+LOG_DIR = Path(os.environ.get("TIMELOGGER_DIR", Path(__file__).resolve().parent))
+LOG_FILE = LOG_DIR / "advancedlog.txt"
 
 
+def main() -> None:
+    # Day/month/year hour:minute:second
+    date_str = datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")
+
+    # Display the arguments (sys.argv[0] is the script name, so skip it)
+    args = sys.argv[1:]
+    if args:
+        for arg in args:
+            print("argument ~", arg)
+    else:
+        print("no arguments")
+
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    with open(LOG_FILE, "a") as f:
+        f.write(date_str + "\n")
+
+
+if __name__ == "__main__":
+    main()
